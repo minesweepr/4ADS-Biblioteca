@@ -1,10 +1,11 @@
 import sqlite3
 import os
 
-BDD_PATH = os.path.join(os.path.dirname(__file__), "bookshelf.db")
+BDD_PATH = os.path.join(os.path.dirname(__file__), "biblio4ads.db")
 
 def conector():
     conn = sqlite3.connect(BDD_PATH)
+    conn.row_factory = sqlite3.Row # permite acessar colunas pelo nome ao invés do número com TULPAS
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
@@ -60,3 +61,20 @@ def livro_editar(id: int, titulo: str, autor: str, quote: str):
 def livro_deletar(id: int):
     with conector() as conn:
         conn.execute("DELETE FROM livro WHERE id = ?", (id,))
+
+# usuário
+def usuario_novo(nome: str, email: str, senha: str):
+    try:
+        with conector() as conn:
+            conn.execute("INSERT INTO usuario (nome, email, senha, tipo) VALUES (?,?,?,?)", (nome, email, senha, "aluno"))
+    except sqlite3.IntegrityError:
+        raise ValueError("Esse email já está cadastrado no sistema.")
+    except sqlite3.Error as e:
+        raise RuntimeError(f"Erro interno ao criar novo usuario: {e}")
+    
+def usuario_por_email(email: str):
+    try:
+        with conector() as conn:
+            return conn.execute("SELECT id, nome, email, senha, tipo FROM usuario WHERE email = ?", (email,)).fetchone()
+    except sqlite3.Error as e:
+        raise RuntimeError(f"Erro interno ao buscar usuario: {e}")
