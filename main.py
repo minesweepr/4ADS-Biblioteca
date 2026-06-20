@@ -46,3 +46,92 @@ except ValueError as e:
     print(f"erro de valor {e}")
 except RuntimeError as e:
     print(f"erro de run {e}")
+
+
+# Emprestimo, devolução e restrição
+from datetime import datetime,timedelta
+
+print("\n\nTESTE 4 - pedir EMPRESTIMO")
+
+data_prevista=(datetime.now()+timedelta(days=7)).isoformat()
+
+emprestimo_novo(id_livro=1,id_aluno=1,data_previsao_retorno=data_prevista)
+
+print("\nLivro 1:")
+print(dict(livro_listar_um(1)))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+print("\nRestricao:", usuario_possui_restricao(1))
+
+print("\n\nTESTE 5 - emprestimo no mesmo LIVRO")
+
+try:
+    emprestimo_novo(id_livro=1,id_aluno=1,data_previsao_retorno=data_prevista)
+    print("ERRO: deveria bloquear")
+except Exception as e:
+    print("Bloqueado corretamente:", e)
+
+print("\nLivro 1:")
+print(dict(livro_listar_um(1)))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+
+print("\n\nTESTE 6 - GERAR ATRASO / Restrição")
+
+ontem=(datetime.now()-timedelta(days=1)).isoformat()
+
+with conector() as conn:
+    conn.execute("UPDATE emprestimo SET data_previsao_retorno=? WHERE id=1",(ontem,))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+print("\nRestricao:", usuario_possui_restricao(1))
+
+
+print("\n\nTESTE 7 - tentar EMPRESTIMO com RESTRIÇAO")
+
+try:
+    emprestimo_novo(id_livro=2,id_aluno=1,data_previsao_retorno=data_prevista)
+    print("ERRO: deveria bloquear")
+except Exception as e:
+    print("Bloqueado corretamente:", e)
+
+print("\nLivro 2:")
+print(dict(livro_listar_um(2)))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+# devolver livro na qual restriçao esta vinculada
+print("\n\nTESTE 8 - DEVOLUCAO")
+
+emprestimo_devolver(1)
+
+print("\nLivro 1:")
+print(dict(livro_listar_um(1)))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+print("\nRestricao:", usuario_possui_restricao(1))
+
+# tendo tirado a restriçao
+print("\n\nTESTE 9 - NOVO EMPRESTIMO LIBERADO")
+
+emprestimo_novo(id_livro=2,id_aluno=1,data_previsao_retorno=data_prevista)
+
+print("\nLivro 2:")
+print(dict(livro_listar_um(2)))
+
+print("\nEmprestimos:")
+print([dict(e) for e in emprestimo_listar_todos()])
+
+print("\n\nTESTE 10 - EDITAR EMPRESTIMO")
+print("\nANTES:", dict(emprestimo_listar_um(2)))
+emprestimo_editar(2,2,1,"2030-12-31")
+print("\nDEPOIS:", dict(emprestimo_listar_um(2)))
