@@ -35,10 +35,27 @@ def init_bdd():
                     data_emprestimo DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     data_previsao_retorno DATETIME NOT NULL,
                     data_retorno DATETIME,
+                    status TEXT NOT NULL CHECK(status IN ('ATIVO','FINALIZADO')) DEFAULT 'ATIVO',
 
                     FOREIGN KEY (id_livro) REFERENCES livro(id) ON DELETE CASCADE,
                     FOREIGN KEY (id_aluno) REFERENCES usuario(id) ON DELETE CASCADE
                 );
+                               
+                CREATE TRIGGER IF NOT EXISTS trg_bloqueia_emprestimo
+                BEFORE INSERT ON emprestimo
+                WHEN EXISTS(
+                    SELECT 1
+                    FROM emprestimo
+                    WHERE id_aluno = NEW.id_aluno
+                    AND status = 'ATIVO'
+                    AND data_previsao_retorno < DATETIME('now')
+                )
+                BEGIN
+                    SELECT RAISE(
+                        ABORT,
+                        'Aluno possui emprestimo atrasado'
+                    );
+                END;
             """)
 
 # CRUD livros
@@ -78,3 +95,47 @@ def usuario_por_email(email: str):
             return conn.execute("SELECT id, nome, email, senha, tipo FROM usuario WHERE email = ?", (email,)).fetchone()
     except sqlite3.Error as e:
         raise RuntimeError(f"Erro interno ao buscar usuario: {e}")
+
+#crud emprestimo    
+from datetime import datetime
+
+def usuario_possui_restricao(id_aluno:int):
+    with conector() as conn:
+        emprestimos=conn.execute("SELECT data_previsao_retorno FROM emprestimo WHERE id_aluno=? AND status='ATIVO'",(id_aluno,)).fetchall()
+        agora=datetime.now()
+        for e in emprestimos:
+            if datetime.fromisoformat(e["data_previsao_retorno"])<agora:
+                return True
+        return False
+    
+def emprestimo_listar_todos():
+    with conector() as conn:
+        return conn.execute("SELECT * FROM emprestimo").fetchall()
+    
+def emprestimo_listar_um(id:int):
+    with conector() as conn:
+        return conn.execute("SELECT * FROM emprestimo WHERE id=?",(id,)).fetchone()
+    
+def emprestimo_novo(id_livro:int,id_aluno:int,data_previsao_retorno:str):
+    if usuario_possui_restricao(id_aluno):
+        raise ValueError("Aluno possui empréstimo em atraso.")
+    
+    livro=livro_listar_um(id_livro)
+    if not livro or livro["disponivel"]==0:
+        raise ValueError("Livro indisponível.")    
+
+    with conector() as conn:
+        conn.execute("INSERT INTO emprestimo(id_livro,id_aluno,data_previsao_retorno,status) VALUES(?,?,?,'ATIVO')",(id_livro,id_aluno,data_previsao_retorno))
+        conn.execute("UPDATE livro SET disponivel=0 WHERE id=?",(id_livro,))
+    
+def emprestimo_devolver(id_emprestimo:int):
+    with conector() as conn:
+        emprestimo=conn.execute("SELECT id_livro FROM emprestimo WHERE id=?",(id_emprestimo,)).fetchone()
+        if not emprestimo:
+            raise ValueError("Empréstimo não encontrado.")
+        conn.execute("UPDATE emprestimo SET status='FINALIZADO',data_retorno=CURRENT_TIMESTAMP WHERE id=?",(id_emprestimo,))
+        conn.execute("UPDATE livro SET disponivel=1 WHERE id=?",(emprestimo["id_livro"],))
+
+def emprestimo_editar(id:int,id_livro:int,id_aluno:int,data_previsao_retorno:str):
+    with conector() as conn:
+        conn.execute("UPDATE emprestimo SET id_livro=?,id_aluno=?,data_previsao_retorno=? WHERE id=?",(id_livro,id_aluno,data_previsao_retorno,id))
