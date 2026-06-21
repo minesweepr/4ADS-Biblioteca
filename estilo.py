@@ -1,9 +1,10 @@
 import tkinter as tk
-from tkinter import ttk
+from telas.login import TelaLogin
 
 # root do estilo
 ## cores
 BG = "#181B1E"
+NAV = "#1E2329"
 CARD = "#272C32"
 BORDA = "#343B42"
 ACCENT = "#6CABEB"
@@ -31,3 +32,35 @@ def label_form(parent, text: str, **kw):
 def entry_form(parent, **kw):
     return tk.Entry(parent, font=F_TEXTO, bg=BG, fg=BRANCO, insertbackground=BRANCO, bd=0, relief="flat", 
                     highlightthickness=1, highlightbackground=BORDA, highlightcolor=ACCENT, **kw)
+
+class NavTopo(tk.Frame):
+    def __init__(self, parent, usuario: dict):
+        super().__init__(parent, bg=NAV)
+        
+        # barra superior
+        barra_sup = tk.Frame(self, bg=NAV)
+        barra_sup.pack(fill="x", pady=(20, 0))
+
+        ## barra superior, lado esquerdo
+        tk.Label(barra_sup, text="Biblioteca Acadêmica", font=F_TITULO, fg=BRANCO, bg=NAV).pack(side="left", padx=23)
+        ## TODO: adicionar logo/icone
+
+        ## barra superior, lado direito
+        btn_sair = botao(barra_sup, bg=DANGER, command=None, text="Sair") # TODO: sair funcional
+        btn_sair.pack(side="right", padx=23)
+
+        tk.Label(barra_sup, text=f"({usuario.get("tipo")})", font=F_PEQUENO, fg=APAGADO, bg=NAV).pack(side="right")
+        tk.Label(barra_sup, text=usuario.get("nome"), font=F_PEQUENO, fg=APAGADO, bg=NAV).pack(side="right")
+
+        # separador
+        tk.Frame(self, height=1, bg=BORDA).pack(side=tk.TOP, fill=tk.X, pady=(18, 10))
+        
+        # barra inferior
+        barra_inf = tk.Frame(self, bg=NAV)
+        barra_inf.pack(fill="x", pady=(0, 10))
+
+        self.acervo = tk.Label(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=ACCENT, cursor="hand2")
+        self.acervo.pack(side="left", padx=23)
+
+        self.acervo = tk.Label(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, cursor="hand2")
+        self.acervo.pack(side="left", padx=23)

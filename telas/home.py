@@ -15,12 +15,10 @@ class Home(tk.Frame):
 
         self.cards = []
 
-        self.navbar = st.nav(self)
-
         self.titulo_frame = tk.Frame(self, bg=st.BG)
         self.titulo_frame.pack(fill="both", pady=20, padx=35)
 
-        titulo = tk.Label( self.titulo_frame, text="Todos os livros", font=st.F_TITULO, fg=st.BRANCO, bg=st.BG )
+        titulo = tk.Label( self.titulo_frame, text="Todos os livros", font=st.F_SUBTITULO, fg=st.BRANCO, bg=st.BG )
         titulo.pack(side="left")
 
         if self.master.usuario_logado["tipo"]=="bibliotecario":
