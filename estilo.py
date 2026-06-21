@@ -1,4 +1,6 @@
 import tkinter as tk
+from telas.emprestimo import Emprestimo
+from telas.home import Home
 from telas.login import TelaLogin
 
 # root do estilo
@@ -37,6 +39,8 @@ class NavTopo(tk.Frame):
     def __init__(self, parent, usuario: dict):
         super().__init__(parent, bg=NAV)
         
+        self.parent = parent
+
         # barra superior
         barra_sup = tk.Frame(self, bg=NAV)
         barra_sup.pack(fill="x", pady=(20, 0))
@@ -59,8 +63,20 @@ class NavTopo(tk.Frame):
         barra_inf = tk.Frame(self, bg=NAV)
         barra_inf.pack(fill="x", pady=(0, 10))
 
-        self.acervo = tk.Label(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=ACCENT, cursor="hand2")
+        self.acervo = tk.Button(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=ACCENT, bd=0, cursor="hand2", command=lambda: self._abrir_tela(Home))
         self.acervo.pack(side="left", padx=23)
 
-        self.acervo = tk.Label(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, cursor="hand2")
-        self.acervo.pack(side="left", padx=23)
+        self.emprestimo = tk.Button(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, bd=0, cursor="hand2", command=lambda: self._abrir_tela(Emprestimo))
+        self.emprestimo.pack(side="left", padx=23)
+
+    def _abrir_tela(self, TelaClasse):
+        root = self.winfo_toplevel()
+
+        for widget in root.winfo_children():
+            if not isinstance(widget, NavTopo):
+                widget.destroy()
+
+        TelaClasse(root).pack(fill="both", expand=True)
+
+
+            

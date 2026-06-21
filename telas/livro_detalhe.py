@@ -1,6 +1,11 @@
 import tkinter as tk
+from datetime import datetime, timedelta
+
 import estilo as st
 import bdd
+
+from telas.emprestimo import Emprestimo
+from telas.form_livro import FormLivro
 
 class LivroDetalhe(tk.Frame):
     def __init__(self, master, livro_id, on_close):
@@ -12,7 +17,7 @@ class LivroDetalhe(tk.Frame):
 
         self.configure(bg=st.BG)
 
-        self.botao_voltar = tk.Button( self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self.fechar, cursor="hand2" )
+        self.botao_voltar = tk.Button( self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self._fechar, cursor="hand2" )
         self.botao_voltar.pack( padx=35, pady=32, anchor="w" )
 
         self.main_frame = tk.Frame( self, bg=st.BG )
@@ -46,23 +51,50 @@ class LivroDetalhe(tk.Frame):
         descricao.pack( fill="x", padx=12, pady=10 )
         
         if self.master.usuario_logado["tipo"]=="aluno":
-            self.botao_alugar = st.botao(self.text_frame, st.ACCENT, None, "Alugar")
+            self.botao_alugar = st.botao(self.text_frame, st.ACCENT, self._alugar, "Alugar")
             self.botao_alugar.pack( anchor="w", pady=25 )
         elif self.master.usuario_logado["tipo"]=="bibliotecario":
             self.btn_frame = tk.Frame( self.text_frame, bg=st.BG )
             self.btn_frame.pack(pady=18)
 
-            self.botao_editar = st.botao(self.btn_frame, st.ACCENT, None, "Editar")
+            self.botao_editar = st.botao(self.btn_frame, st.ACCENT, self._editar, "Editar")
             self.botao_editar.pack(side="left", anchor="n", pady=25, padx=15)
 
             self.botao_deletar = st.botao(self.btn_frame, st.DANGER, self._deletar, "Deletar") # chamada função deletar
             self.botao_deletar.pack(side="left", anchor="n", pady=25, padx=15 )
         
-    def fechar(self):
+    def _fechar(self):
         self.destroy()
         self.on_close()
+
+    def _alugar(self):
+        try:
+            id_aluno = self.master.usuario_logado["id"]
+            id_livro = self.livro["id"]
+            data_prevista = ( datetime.now() + timedelta(days=7) ).isoformat()
+
+            alugado = bdd.emprestimo_novo( id_livro, id_aluno, data_prevista )
+            print("Empréstimo realizado")
+            print(alugado)
+
+            # TODO direcionar a aba de empréstimos feito
+            self.destroy()
+            Emprestimo(self.master).pack(fill="both", expand=True)
+
+        except (RuntimeError, ValueError) as exc:
+            self.msg_erro.config(text=str(exc))
+
+    def _editar(self):
+        self.destroy()
+        FormLivro(self.master, on_close=self.on_close, livro=self.livro ).pack(fill="both", expand=True)
     
     # função deletar simples
     def _deletar(self):
-        bdd.livro_deletar(self.livro["id"])
-        self.fechar()
+        try:
+            bdd.livro_deletar(self.livro["id"])
+            print("Livro deletado")
+
+            self._fechar()
+
+        except (RuntimeError, ValueError) as exc:
+            self.msg_erro.config(text=str(exc))

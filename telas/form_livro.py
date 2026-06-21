@@ -1,16 +1,18 @@
 import tkinter as tk
 import estilo as st
 from bdd import livro_novo
+from bdd import livro_editar
 
-class AdicionarLivro(tk.Frame):
-    def __init__(self, master, on_close):
+class FormLivro(tk.Frame):
+    def __init__(self, master, on_close, livro=None):
         super().__init__(master)
 
         self.on_close = on_close
+        self.livro = livro
 
         self.configure(bg=st.BG)
 
-        self.botao_voltar = tk.Button( self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self.fechar, cursor="hand2" )
+        self.botao_voltar = tk.Button( self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self._fechar, cursor="hand2" )
         self.botao_voltar.pack( padx=35, pady=32, anchor="w" )
 
         self.main_frame = tk.Frame( self, bg=st.BG )
@@ -48,19 +50,26 @@ class AdicionarLivro(tk.Frame):
         self.quote_entry = st.entry_form(self.text_frame)
         self.quote_entry.pack(fill="x", ipady=6, pady=(2, 12))
 
-        # adicionar
-        self.botao = st.botao(self.text_frame, st.ACCENT, self._adicionar, "Adicionar") # chamada função adicionar
+        # preencher se for editar
+        if self.livro:
+            self.nome_entry.insert(0, self.livro["titulo"])
+            self.autor_entry.insert(0, self.livro["autor"])
+            self.quote_entry.insert(0, self.livro["quote"] or "")
+
+        # botao adicionar ou editar
+        texto_botao = "Salvar" if livro else "Adicionar"
+        self.botao = st.botao(self.text_frame, st.ACCENT, self._salvar, texto_botao)
         self.botao.pack( anchor="w", pady=25 )
         
         self.msg = tk.Label(self.text_frame, text="", fg=st.DANGER, bg=st.BG)
         self.msg.pack(anchor="w")
 
-    def fechar(self):
+    def _fechar(self):
         self.destroy()
         self.on_close()
 
-    # função adicionar simples
-    def _adicionar(self):
+    # função salvar e editar 
+    def _salvar(self):
         nome = self.nome_entry.get()
         autor = self.autor_entry.get()
         quote = self.quote_entry.get()
@@ -69,9 +78,23 @@ class AdicionarLivro(tk.Frame):
             self.msg.config(text="Preencha todos os campos obrigatórios.", fg=st.DANGER)
             return
         
-        livro_novo(nome, autor, quote)
-        self.msg.config(text=f"O livro {nome} foi criado com sucesso!", fg=st.ACCENT)
+        try:
+            if self.livro:
+                livro_editar(self.livro["id"], nome, autor, quote)
+                print("Livro editado")
+
+                self.msg.config(text=f"O livro {nome} foi editado com sucesso!", fg=st.ACCENT)
+
+            else:
+                livro_novo(nome, autor, quote)
+                print("Livro adicionado")
+                self.msg.config(text=f"O livro {nome} foi criado com sucesso!", fg=st.ACCENT)
+
+        except (RuntimeError, ValueError) as exc:
+            self.msg_erro.config(text=str(exc))
+        
 
         self.nome_entry.delete(0, tk.END)
         self.autor_entry.delete(0, tk.END)
         self.quote_entry.delete(0, tk.END)
+        self._fechar()
