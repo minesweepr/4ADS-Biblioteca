@@ -2,7 +2,7 @@ import tkinter as tk
 
 import estilo as st
 from telas.livro_detalhe import LivroDetalhe
-from telas.adicionar_livro import AdicionarLivro
+from telas.form_livro import FormLivro
 import bdd
 
 class Home(tk.Frame):
@@ -81,8 +81,10 @@ class Home(tk.Frame):
 
     def cadastrar_livro(self):
         self.destroy()
-        AdicionarLivro(self.master, on_close=self.abrir_home).pack(fill="both", expand=True)
+        FormLivro(self.master, on_close=self.abrir_home).pack(fill="both", expand=True)
 
     def abrir_home(self):
         self.destroy()
         Home(self.master).pack(fill="both", expand=True)
+
+

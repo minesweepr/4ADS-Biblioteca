@@ -139,3 +139,7 @@ def emprestimo_devolver(id_emprestimo:int):
 def emprestimo_editar(id:int,id_livro:int,id_aluno:int,data_previsao_retorno:str):
     with conector() as conn:
         conn.execute("UPDATE emprestimo SET id_livro=?,id_aluno=?,data_previsao_retorno=? WHERE id=?",(id_livro,id_aluno,data_previsao_retorno,id))
+
+def emprestimo_listar_por_usuario(id_aluno: int):
+    with conector() as conn:
+        return conn.execute(""" SELECT e.*, l.titulo AS titulo_livro FROM emprestimo e JOIN livro l ON l.id = e.id_livro WHERE e.id_aluno = ? AND e.status = 'ATIVO' """, (id_aluno,)).fetchall()
