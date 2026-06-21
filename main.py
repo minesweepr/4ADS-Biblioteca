@@ -15,7 +15,11 @@ if __name__ == "__main__":
 
     def _login_sucesso(usuario_logado):
         tela.destroy()
-        Home()
+        root.usuario_logado = usuario_logado
+        
+        home = Home(root)
+        home.pack(fill="both", expand=True)
+
         
     root = tk.Tk()
     root.geometry("1040x690")
