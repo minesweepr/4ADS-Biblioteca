@@ -4,33 +4,35 @@ from bdd import init_bdd
 from telas.login import TelaLogin
 from telas.home import Home
 
-"""
-nome: Administrador
-email: bibli@tecario.com
-senha: 123456
-"""
-# TODO: melhorar a main
-if __name__ == "__main__":
-    init_bdd()
+class BibliotecaAcademica(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("1040x690")
+        self.title("Biblioteca Acadêmica")
+        #root.iconbitmap("myIcon.ico") # TODO: mudar ícone
+        self.configure(bg=estilo.BG)
+        
+        self.usuario_logado = None
 
-    def _login_sucesso(usuario_logado):
-        tela.destroy()
-        topbar = estilo.NavTopo(parent=root, usuario=usuario_logado)
+        self.login_mostrar()
+
+    def login_mostrar(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.tela = TelaLogin(master=self, on_success=self.login_sucesso)
+        self.tela.pack(fill="both", expand=True)
+        self.usuario_logado = None
+
+    def login_sucesso(self, usuario):
+        self.usuario_logado = usuario
+
+        self.tela.destroy()
+        
+        topbar = estilo.NavTopo(parent=self, usuario=self.usuario_logado, sair=lambda: self.login_mostrar())
         topbar.pack(side="top", fill="x")
-        
-        root.usuario_logado = usuario_logado
-        
-        home = Home(root)
+        home = Home(self)
         home.pack(fill="both", expand=True)
 
-        
-    root = tk.Tk()
-    root.geometry("1040x690")
-    root.title("Biblioteca Acadêmica")
-    # mudar icone
-    root.configure(bg=estilo.BG)
-
-    tela = TelaLogin(master=root, on_success=_login_sucesso)
-    tela.pack(fill="both", expand=True)
-
-    root.mainloop()
+if __name__ == "__main__":
+    init_bdd()
+    BibliotecaAcademica().mainloop()

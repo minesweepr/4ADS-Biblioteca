@@ -53,6 +53,8 @@ class LivroDetalhe(tk.Frame):
         if self.master.usuario_logado["tipo"]=="aluno":
             self.botao_alugar = st.botao(self.text_frame, st.ACCENT, self._alugar, "Alugar")
             self.botao_alugar.pack( anchor="w", pady=25 )
+            self.msg_erro = tk.Label(self.text_frame, text="", fg=st.DANGER, bg=st.BG)
+            self.msg_erro.pack(anchor="w")
         elif self.master.usuario_logado["tipo"]=="bibliotecario":
             self.btn_frame = tk.Frame( self.text_frame, bg=st.BG )
             self.btn_frame.pack(pady=18)

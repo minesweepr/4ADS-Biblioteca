@@ -36,7 +36,7 @@ def entry_form(parent, **kw):
                     highlightthickness=1, highlightbackground=BORDA, highlightcolor=ACCENT, **kw)
 
 class NavTopo(tk.Frame):
-    def __init__(self, parent, usuario: dict):
+    def __init__(self, parent, usuario: dict, sair):
         super().__init__(parent, bg=NAV)
         
         self.parent = parent
@@ -50,7 +50,7 @@ class NavTopo(tk.Frame):
         ## TODO: adicionar logo/icone
 
         ## barra superior, lado direito
-        btn_sair = botao(barra_sup, bg=DANGER, command=None, text="Sair") # TODO: sair funcional
+        btn_sair = botao(barra_sup, bg=DANGER, command=sair, text="Sair") # TODO: sair funcional
         btn_sair.pack(side="right", padx=23)
 
         tk.Label(barra_sup, text=f"({usuario.get("tipo")})", font=F_PEQUENO, fg=APAGADO, bg=NAV).pack(side="right")
@@ -63,10 +63,15 @@ class NavTopo(tk.Frame):
         barra_inf = tk.Frame(self, bg=NAV)
         barra_inf.pack(fill="x", pady=(0, 10))
 
-        self.acervo = tk.Button(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=ACCENT, bd=0, cursor="hand2", command=lambda: self._abrir_tela(Home))
+        # TODO: fg muda dependendo da pagina
+        self.acervo = tk.Button(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=APAGADO, bd=0, 
+                                cursor="hand2", activebackground=NAV, activeforeground=ACCENT, 
+                                command=lambda: self._abrir_tela(Home))
         self.acervo.pack(side="left", padx=23)
 
-        self.emprestimo = tk.Button(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, bd=0, cursor="hand2", command=lambda: self._abrir_tela(Emprestimo))
+        self.emprestimo = tk.Button(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, 
+                                    bd=0, cursor="hand2", activebackground=NAV, activeforeground=ACCENT, 
+                                    command=lambda: self._abrir_tela(Emprestimo))
         self.emprestimo.pack(side="left", padx=23)
 
     def _abrir_tela(self, TelaClasse):
@@ -77,6 +82,3 @@ class NavTopo(tk.Frame):
                 widget.destroy()
 
         TelaClasse(root).pack(fill="both", expand=True)
-
-
-            

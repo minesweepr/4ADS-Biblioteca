@@ -12,10 +12,10 @@ class Emprestimo(tk.Frame):
 
         self.usuario = self.master.usuario_logado
 
-        titulo = tk.Label(self, text="Empréstimos Ativos", font=st.F_TITULO, fg=st.BRANCO, bg=st.BG)
+        titulo = tk.Label(self, text="Empréstimos Ativos", font=st.F_SUBTITULO, fg=st.BRANCO, bg=st.BG)
         titulo.pack(padx=35, pady=20, anchor="w")
 
-        linha = tk.Frame(self, bg=st.APAGADO, height=2)
+        linha = tk.Frame(self, bg=st.BORDA, height=1)
         linha.pack(fill="x", padx=35)
 
         self.cards = []
