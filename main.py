@@ -1,5 +1,5 @@
 import tkinter as tk
-import estilo
+import estilo as st
 from bdd import init_bdd
 from telas.login import TelaLogin
 from telas.home import Home
@@ -9,8 +9,10 @@ class BibliotecaAcademica(tk.Tk):
         super().__init__()
         self.geometry("1040x690")
         self.title("Biblioteca Acadêmica")
-        #self.iconbitmap("myIcon.ico") # TODO: mudar ícone
-        self.configure(bg=estilo.BG)
+        self.configure(bg=st.BG)
+
+        img_favicon = st.logo() 
+        self.iconphoto(True, img_favicon)
         
         self.usuario_logado = None
 
@@ -28,7 +30,7 @@ class BibliotecaAcademica(tk.Tk):
 
         self.tela.destroy()
         
-        topbar = estilo.NavTopo(parent=self, usuario=self.usuario_logado, sair=lambda: self.login_mostrar())
+        topbar = st.NavTopo(parent=self, usuario=self.usuario_logado, sair=lambda: self.login_mostrar())
         topbar.pack(side="top", fill="x")
         home = Home(self)
         home.pack(fill="both", expand=True)

@@ -1,7 +1,8 @@
 import tkinter as tk
+import os
 from telas.emprestimo import Emprestimo
 from telas.home import Home
-from ttkbootstrap_icons_bs import BootstrapIcon
+from PIL import Image, ImageTk
 
 # root do estilo
 ## cores
@@ -23,6 +24,11 @@ F_TEXTO = ("Arial", 10)
 F_QUOTE = ("Arial", 10, "italic")
 F_PEQUENO = ("Arial", 8)
 
+## caminhos
+CAMINHO = os.path.dirname(__file__)
+CAMINHO_LOGO = os.path.join(CAMINHO, "assets", "icone.png")
+CAMINHO_CAPA = os.path.join(CAMINHO, "assets", "capa_livro_cinza.png")
+
 def botao(parent, bg: str, command, text: str, **kw):
     btn = tk.Button(parent, bd=0, bg=bg, command=command, cursor="hand2", text=text, fg=BRANCO, 
                     font=F_BTN, padx=37, pady=9, activebackground=bg, activeforeground=BRANCO, **kw)
@@ -35,9 +41,13 @@ def entry_form(parent, **kw):
     return tk.Entry(parent, font=F_TEXTO, bg=BG, fg=BRANCO, insertbackground=BRANCO, bd=0, relief="flat", 
                     highlightthickness=1, highlightbackground=BORDA, highlightcolor=ACCENT, **kw)
 
-def logo(parent, bg: str, **kw):
-    icone = BootstrapIcon("book", size=55, color=ACCENT, style="outline", **kw)
-    return tk.Label(parent, image=icone.image, bg=bg)
+def logo(parent=None, bg=None):
+    img = ImageTk.PhotoImage(Image.open(CAMINHO_LOGO))
+    if parent is None:
+        return img
+    label = tk.Label(parent, image=img, bg=bg)
+    label.image = img
+    return label
 
 def separador(parent):
     return tk.Frame(parent, height=1, bg=BORDA)
@@ -50,14 +60,14 @@ class NavTopo(tk.Frame):
 
         # barra superior
         barra_sup = tk.Frame(self, bg=NAV)
-        barra_sup.pack(fill="x", pady=10)
+        barra_sup.pack(fill="x", pady=18)
 
         ## barra superior, lado esquerdo
-        logo(barra_sup, NAV).pack(side="left", padx=(20, 8))
+        logo(barra_sup, NAV).pack(side="left", padx=20)
         tk.Label(barra_sup, text="Biblioteca Acadêmica", font=F_TITULO, fg=BRANCO, bg=NAV).pack(side="left")
 
         ## barra superior, lado direito
-        btn_sair = botao(barra_sup, bg=DANGER, command=sair, text="Sair") # TODO: sair funcional
+        btn_sair = botao(barra_sup, bg=DANGER, command=sair, text="Sair")
         btn_sair.pack(side="right", padx=23)
 
         tk.Label(barra_sup, text=f"({usuario.get("tipo")})", font=F_PEQUENO, fg=APAGADO, bg=NAV).pack(side="right")
