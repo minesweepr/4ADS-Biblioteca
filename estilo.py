@@ -1,7 +1,7 @@
 import tkinter as tk
 from telas.emprestimo import Emprestimo
 from telas.home import Home
-from telas.login import TelaLogin
+from ttkbootstrap_icons_bs import BootstrapIcon
 
 # root do estilo
 ## cores
@@ -35,6 +35,13 @@ def entry_form(parent, **kw):
     return tk.Entry(parent, font=F_TEXTO, bg=BG, fg=BRANCO, insertbackground=BRANCO, bd=0, relief="flat", 
                     highlightthickness=1, highlightbackground=BORDA, highlightcolor=ACCENT, **kw)
 
+def logo(parent, bg: str, **kw):
+    icone = BootstrapIcon("book", size=55, color=ACCENT, style="outline", **kw)
+    return tk.Label(parent, image=icone.image, bg=bg)
+
+def separador(parent):
+    return tk.Frame(parent, height=1, bg=BORDA)
+
 class NavTopo(tk.Frame):
     def __init__(self, parent, usuario: dict, sair):
         super().__init__(parent, bg=NAV)
@@ -43,11 +50,11 @@ class NavTopo(tk.Frame):
 
         # barra superior
         barra_sup = tk.Frame(self, bg=NAV)
-        barra_sup.pack(fill="x", pady=(20, 0))
+        barra_sup.pack(fill="x", pady=10)
 
         ## barra superior, lado esquerdo
-        tk.Label(barra_sup, text="Biblioteca Acadêmica", font=F_TITULO, fg=BRANCO, bg=NAV).pack(side="left", padx=23)
-        ## TODO: adicionar logo/icone
+        logo(barra_sup, NAV).pack(side="left", padx=(20, 8))
+        tk.Label(barra_sup, text="Biblioteca Acadêmica", font=F_TITULO, fg=BRANCO, bg=NAV).pack(side="left")
 
         ## barra superior, lado direito
         btn_sair = botao(barra_sup, bg=DANGER, command=sair, text="Sair") # TODO: sair funcional
@@ -57,7 +64,7 @@ class NavTopo(tk.Frame):
         tk.Label(barra_sup, text=usuario.get("nome"), font=F_PEQUENO, fg=APAGADO, bg=NAV).pack(side="right")
 
         # separador
-        tk.Frame(self, height=1, bg=BORDA).pack(side=tk.TOP, fill=tk.X, pady=(18, 10))
+        separador(self).pack(side=tk.TOP, fill=tk.X, pady=(0, 10))
         
         # barra inferior
         barra_inf = tk.Frame(self, bg=NAV)

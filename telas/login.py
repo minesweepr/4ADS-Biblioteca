@@ -1,64 +1,60 @@
 import tkinter as tk
 import autenticacao
-import estilo
-from tkinter import ttk
+import estilo as st
 
 class TelaLogin(tk.Frame):
     def __init__(self, master, on_success):
-        super().__init__(master, bg=estilo.BG)
+        super().__init__(master, bg=st.BG)
         self.on_success = on_success
         self._modo = "login"
         self._build()
     
     def _build(self):
-        wrapper = tk.Frame(self, bg=estilo.BG, width=350, height=600)
+        wrapper = tk.Frame(self, bg=st.BG, width=350, height=600)
         wrapper.place(relx=0.5, rely=0.5, anchor="center")
         wrapper.pack_propagate(False)
 
         # TODO: logo aq, igual no figma
-
-        tk.Label(wrapper, text="Biblioteca Acadêmica", font=estilo.F_TITULO, fg=estilo.BRANCO, bg=estilo.BG).pack(pady=28)
+        st.logo(wrapper, st.BG).pack()
+        tk.Label(wrapper, text="Biblioteca Acadêmica", font=st.F_TITULO, fg=st.BRANCO, bg=st.BG).pack(pady=(6, 28))
 
         # parte interna card
-        card = tk.Frame(wrapper, bg=estilo.CARD, padx=40, pady=35)
+        card = tk.Frame(wrapper, bg=st.CARD, padx=40, pady=35)
         card.pack(fill="x",)
         
-        self.modo_titulo = tk.Label(card, text="Login", font=estilo.F_SUBTITULO, fg=estilo.BRANCO, bg=estilo.CARD)
+        self.modo_titulo = tk.Label(card, text="Login", font=st.F_SUBTITULO, fg=st.BRANCO, bg=st.CARD)
         self.modo_titulo.pack(pady=(0, 25))
         
         # tudo nome (cadastro)
-        self.nome_label=estilo.label_form(card, text="Nome", bg=estilo.CARD)
-        #self.nome_label.pack(anchor="w")
-
-        self.nome_entry = estilo.entry_form(card)
-        #self.nome_entry.pack(fill="x", ipady=6, pady=(2, 12))
+        self.nome_label=st.label_form(card, text="Nome", bg=st.CARD)
+        self.nome_entry = st.entry_form(card)
         
         # tudo email
-        self.email_label=estilo.label_form(card, text="E-mail", bg=estilo.CARD)
+        self.email_label=st.label_form(card, text="E-mail", bg=st.CARD)
         self.email_label.pack(anchor="w")
 
-        self.email_entry = estilo.entry_form(card)
+        self.email_entry = st.entry_form(card)
         self.email_entry.pack(fill="x", ipady=6, pady=(2, 12))
 
         # tudo senha
-        self.senha_label=estilo.label_form(card, text="Senha", bg=estilo.CARD)
+        self.senha_label=st.label_form(card, text="Senha", bg=st.CARD)
         self.senha_label.pack(anchor="w")
 
-        self.senha_entry = estilo.entry_form(card, show="●")
+        self.senha_entry = st.entry_form(card, show="●")
         self.senha_entry.pack(fill="x", ipady=6, pady=(2, 0))
 
         # btn entrar
-        self.btn_entrar = estilo.botao(card, bg=estilo.ACCENT, command=self._autenticar, text="Entrar")
+        self.btn_entrar = st.botao(card, bg=st.ACCENT, command=self._autenticar, text="Entrar")
         self.btn_entrar.pack(fill="x", pady=(20, 0))
 
         # erros
-        self.msg = tk.Label(card, text="", font=estilo.F_PEQUENO, fg=estilo.DANGER, bg=estilo.CARD)
+        self.msg = tk.Label(card, text="", font=st.F_PEQUENO, fg=st.DANGER, bg=st.CARD)
         self.msg.pack(pady=(10, 0))
 
         # cadastro
         self.modo_redirect = tk.Button(card, text="Não tem uma conta? Cadastre-se.", 
-                                       font=estilo.F_PEQUENO, fg=estilo.ACCENT, bg=estilo.CARD, bd=0, 
-                                       activebackground=estilo.CARD, activeforeground=estilo.ACCENT,
+                                       font=st.F_PEQUENO, fg=st.ACCENT, bg=st.CARD, bd=0, 
+                                       activebackground=st.CARD, activeforeground=st.ACCENT,
                                        command=self._modo_troca, cursor="hand2")
         self.modo_redirect.pack()
 
@@ -97,7 +93,7 @@ class TelaLogin(tk.Frame):
             
             try:
                 autenticacao.cadastro(nome, email, senha)
-                self.msg.config(text="Conta criada com sucesso!", fg=estilo.SUCCESS)
+                self.msg.config(text="Conta criada com sucesso!", fg=st.SUCCESS)
 
                 self.nome_entry.delete(0, tk.END)
                 self.email_entry.delete(0, tk.END)

@@ -35,7 +35,7 @@ def init_bdd():
                     data_emprestimo DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     data_previsao_retorno DATETIME NOT NULL,
                     data_retorno DATETIME,
-                    status TEXT NOT NULL CHECK(status IN ('ATIVO','FINALIZADO')) DEFAULT 'ATIVO',
+                    status TEXT NOT NULL CHECK(status IN ('ATIVO','FINALIZADO','ATRASADO')) DEFAULT 'ATIVO',
 
                     FOREIGN KEY (id_livro) REFERENCES livro(id) ON DELETE CASCADE,
                     FOREIGN KEY (id_aluno) REFERENCES usuario(id) ON DELETE CASCADE
@@ -47,8 +47,7 @@ def init_bdd():
                     SELECT 1
                     FROM emprestimo
                     WHERE id_aluno = NEW.id_aluno
-                    AND status = 'ATIVO'
-                    AND data_previsao_retorno < DATETIME('now')
+                    AND status = 'ATRASADO'
                 )
                 BEGIN
                     SELECT RAISE(
@@ -101,7 +100,8 @@ from datetime import datetime
 
 def usuario_possui_restricao(id_aluno:int):
     with conector() as conn:
-        emprestimos=conn.execute("SELECT data_previsao_retorno FROM emprestimo WHERE id_aluno=? AND status='ATIVO'",(id_aluno,)).fetchall()
+        emprestimo_atrasado()
+        emprestimos=conn.execute("SELECT data_previsao_retorno FROM emprestimo WHERE id_aluno=? AND status='ATRASADO'",(id_aluno,)).fetchall()
         agora=datetime.now()
         for e in emprestimos:
             if datetime.fromisoformat(e["data_previsao_retorno"])<agora:
@@ -112,6 +112,14 @@ def emprestimo_listar_todos():
     with conector() as conn:
         return conn.execute("SELECT * FROM emprestimo").fetchall()
     
+def emprestimo_listar_todos_status(status: str):
+    with conector() as conn:
+        return conn.execute("SELECT * FROM emprestimo WHERE status=?",(status,)).fetchall()  
+
+def emprestimo_atrasado():
+    with conector() as conn:
+        conn.execute("UPDATE emprestimo SET status='ATRASADO' WHERE status='ATIVO' and data_previsao_retorno < DATETIME('now')")
+
 def emprestimo_listar_um(id:int):
     with conector() as conn:
         return conn.execute("SELECT * FROM emprestimo WHERE id=?",(id,)).fetchone()
@@ -142,4 +150,4 @@ def emprestimo_editar(id:int,id_livro:int,id_aluno:int,data_previsao_retorno:str
 
 def emprestimo_listar_por_usuario(id_aluno: int):
     with conector() as conn:
-        return conn.execute(""" SELECT e.*, l.titulo AS titulo_livro FROM emprestimo e JOIN livro l ON l.id = e.id_livro WHERE e.id_aluno = ? AND e.status = 'ATIVO' """, (id_aluno,)).fetchall()
+        return conn.execute(""" SELECT e.*, l.titulo AS titulo_livro FROM emprestimo e JOIN livro l ON l.id = e.id_livro WHERE e.id_aluno = ? AND e.status != 'FINALIZADO' ORDER BY data_previsao_retorno ASC""", (id_aluno,)).fetchall()

@@ -9,7 +9,7 @@ class BibliotecaAcademica(tk.Tk):
         super().__init__()
         self.geometry("1040x690")
         self.title("Biblioteca Acadêmica")
-        #root.iconbitmap("myIcon.ico") # TODO: mudar ícone
+        #self.iconbitmap("myIcon.ico") # TODO: mudar ícone
         self.configure(bg=estilo.BG)
         
         self.usuario_logado = None
