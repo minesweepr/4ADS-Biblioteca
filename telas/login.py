@@ -14,9 +14,8 @@ class TelaLogin(tk.Frame):
         wrapper.place(relx=0.5, rely=0.5, anchor="center")
         wrapper.pack_propagate(False)
 
-        # TODO: logo aq, igual no figma
         st.logo(wrapper, st.BG).pack()
-        tk.Label(wrapper, text="Biblioteca Acadêmica", font=st.F_TITULO, fg=st.BRANCO, bg=st.BG).pack(pady=(6, 28))
+        tk.Label(wrapper, text="Biblioteca Acadêmica", font=st.F_TITULO, fg=st.BRANCO, bg=st.BG).pack(pady=(25, 38))
 
         # parte interna card
         card = tk.Frame(wrapper, bg=st.CARD, padx=40, pady=35)
