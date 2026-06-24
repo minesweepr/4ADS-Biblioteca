@@ -62,7 +62,7 @@ class LivroDetalhe(tk.Frame):
             self.botao_editar = st.botao(self.btn_frame, st.ACCENT, self._editar, "Editar")
             self.botao_editar.pack(side="left", anchor="n", pady=25, padx=15)
 
-            self.botao_deletar = st.botao(self.btn_frame, st.DANGER, self._deletar, "Deletar") # chamada função deletar
+            self.botao_deletar = st.botao(self.btn_frame, st.DANGER, self._deletar, "Deletar")
             self.botao_deletar.pack(side="left", anchor="n", pady=25, padx=15 )
         
     def _fechar(self):
@@ -79,12 +79,11 @@ class LivroDetalhe(tk.Frame):
             print("Empréstimo realizado")
             print(alugado)
 
-            # TODO direcionar a aba de empréstimos feito
             self.destroy()
             Emprestimo(self.master).pack(fill="both", expand=True)
 
         except (RuntimeError, ValueError) as exc:
-            self.msg_erro.config(text=str(exc))
+            self.msg_erro.config(text=str(exc), fg=st.DANGER)
 
     def _editar(self):
         self.destroy()

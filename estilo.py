@@ -18,6 +18,7 @@ APAGADO = "#6C7986"
 ## fontes
 F_TITULO = ("Arial", 20, "bold")
 F_SUBTITULO = ("Arial", 16, "bold")
+F_PAG = ("Arial", 14, "bold")
 F_BTN = ("Arial", 11, "bold")
 F_TEXTO = ("Arial", 10)
 F_QUOTE = ("Arial", 10, "italic")

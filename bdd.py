@@ -59,8 +59,16 @@ def init_bdd():
 
 # CRUD livros
 def livro_listar_todos():
-     with conector() as conn:
+    with conector() as conn:
          return conn.execute("SELECT * FROM livro").fetchall()
+     
+def livro_listar_paginado(limit: int, offset: int):
+    with conector() as conn:
+        return conn.execute( "SELECT * FROM livro LIMIT ? OFFSET ?", (limit, offset) ).fetchall()
+
+def livro_count():
+    with conector() as conn:
+        return conn.execute("SELECT COUNT(*) FROM livro").fetchone()[0]
 
 def livro_listar_um(id: int):
     with conector() as conn:
@@ -125,16 +133,19 @@ def emprestimo_listar_um(id:int):
         return conn.execute("SELECT * FROM emprestimo WHERE id=?",(id,)).fetchone()
     
 def emprestimo_novo(id_livro:int,id_aluno:int,data_previsao_retorno:str):
-    if usuario_possui_restricao(id_aluno):
-        raise ValueError("Aluno possui empréstimo em atraso.")
-    
-    livro=livro_listar_um(id_livro)
-    if not livro or livro["disponivel"]==0:
-        raise ValueError("Livro indisponível.")    
+    try:
+        if usuario_possui_restricao(id_aluno):
+            raise ValueError("Aluno possui empréstimo em atraso.")
+        
+        livro=livro_listar_um(id_livro)
+        if not livro or livro["disponivel"]==0:
+            raise ValueError("Livro indisponível.")    
 
-    with conector() as conn:
-        conn.execute("INSERT INTO emprestimo(id_livro,id_aluno,data_previsao_retorno,status) VALUES(?,?,?,'ATIVO')",(id_livro,id_aluno,data_previsao_retorno))
-        conn.execute("UPDATE livro SET disponivel=0 WHERE id=?",(id_livro,))
+        with conector() as conn:
+            conn.execute("INSERT INTO emprestimo(id_livro,id_aluno,data_previsao_retorno,status) VALUES(?,?,?,'ATIVO')",(id_livro,id_aluno,data_previsao_retorno))
+            conn.execute("UPDATE livro SET disponivel=0 WHERE id=?",(id_livro,))
+    except sqlite3.IntegrityError:
+        raise ValueError("Aluno possui empréstimo em atraso.")
     
 def emprestimo_devolver(id_emprestimo:int):
     with conector() as conn:
