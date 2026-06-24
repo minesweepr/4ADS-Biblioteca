@@ -1,5 +1,7 @@
 import tkinter as tk
 import estilo as st
+import colorsys
+from tkinter import ttk
 from bdd import livro_novo
 from bdd import livro_editar
 
@@ -18,9 +20,26 @@ class FormLivro(tk.Frame):
         self.main_frame = tk.Frame( self, bg=st.BG )
         self.main_frame.pack( fill="both", expand=True, padx=(65, 165) )
 
-        card = tk.Frame( self.main_frame, width=223, height=290, bg="#D9D9D9" )
-        card.pack( side="left", anchor="n", padx=(0, 30) )
+        frame_esquerda = tk.Frame(self.main_frame, bg=st.BG)
+        frame_esquerda.pack(side="left", anchor="n", padx=(0, 30))
+
+        card = tk.Frame( frame_esquerda, width=223, height=290, bg="#D9D9D9" )
+        card.pack()
         card.pack_propagate(False)
+
+        # slider
+        if self.livro and self.livro["hex"]:
+            self.hex = self.livro["hex"]
+            num_set = self.hexParaHue(self.livro["hex"].lstrip('#'))
+        else:
+            self.hex = "#00ffff"
+            num_set = 180
+
+        self.slider_hue = tk.Scale(frame_esquerda, from_=0, to=360, orient="horizontal", command=self.hueParaHex, bg=st.ACCENT,
+                                   showvalue=False, highlightthickness=0, activebackground=st.ACCENT, troughcolor=self.hex)
+        
+        self.slider_hue.set(num_set)
+        self.slider_hue.pack(fill="x", pady=(8, 0))
 
         # Textos da direita
         self.text_frame = tk.Frame( self.main_frame, bg=st.BG )
@@ -80,13 +99,13 @@ class FormLivro(tk.Frame):
         
         try:
             if self.livro:
-                livro_editar(self.livro["id"], nome, autor, quote)
+                livro_editar(self.livro["id"], nome, autor, quote, self.hex)
                 print("Livro editado")
 
                 self.msg.config(text=f"O livro {nome} foi editado com sucesso!", fg=st.ACCENT)
 
             else:
-                livro_novo(nome, autor, quote)
+                livro_novo(nome, autor, quote, self.hex)
                 print("Livro adicionado")
                 self.msg.config(text=f"O livro {nome} foi criado com sucesso!", fg=st.ACCENT)
 
@@ -98,3 +117,20 @@ class FormLivro(tk.Frame):
         self.autor_entry.delete(0, tk.END)
         self.quote_entry.delete(0, tk.END)
         self._fechar()
+
+    def hueParaHex(self, *args):
+        r, g, b = colorsys.hls_to_rgb((self.slider_hue.get() / 360.0), 0.5, 1.0)
+        r = int(r * 255)
+        g = int(g * 255)
+        b = int(b * 255)
+        
+        self.hex =  "#%02x%02X%02x"%(r,g,b)
+        self.slider_hue.config(troughcolor=self.hex)
+
+    #TODO: hexParaHue
+    def hexParaHue(self, hex_limpo):
+        r = int(hex_limpo[0:2], 16) / 255.0
+        g = int(hex_limpo[2:4], 16) / 255.0
+        b = int(hex_limpo[4:6], 16) / 255.0
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+        return int(h * 360)

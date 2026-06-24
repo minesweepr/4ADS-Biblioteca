@@ -25,6 +25,7 @@ def init_bdd():
                     titulo TEXT NOT NULL,
                     autor TEXT NOT NULL,
                     quote TEXT,
+                    hex TEXT,
                     disponivel INTEGER NOT NULL DEFAULT 1
                 );
  
@@ -74,13 +75,13 @@ def livro_listar_um(id: int):
     with conector() as conn:
          return conn.execute("SELECT * FROM livro WHERE id = ?", (id,)).fetchone()
 
-def livro_novo(titulo: str, autor: str, quote: str):
+def livro_novo(titulo: str, autor: str, quote: str, hex: str):
     with conector() as conn:
-        conn.execute("INSERT INTO livro (titulo, autor, quote) VALUES (?,?,?)", (titulo, autor, quote))
+        conn.execute("INSERT INTO livro (titulo, autor, quote, hex) VALUES (?,?,?,?)", (titulo, autor, quote, hex))
 
-def livro_editar(id: int, titulo: str, autor: str, quote: str):
+def livro_editar(id: int, titulo: str, autor: str, quote: str, hex: str):
     with conector() as conn:
-        conn.execute("UPDATE livro SET titulo = ?, autor = ?, quote = ? WHERE id = ?", (titulo, autor, quote, id))
+        conn.execute("UPDATE livro SET titulo = ?, autor = ?, quote = ?, hex = ? WHERE id = ?", (titulo, autor, quote, hex, id))
 
 def livro_deletar(id: int):
     with conector() as conn:
