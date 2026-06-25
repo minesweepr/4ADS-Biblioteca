@@ -31,8 +31,8 @@ class Emprestimo(tk.Frame):
         self.titulo_label = tk.Label(titulo_frame, text="Empréstimos Ativos", font=st.F_SUBTITULO, fg=st.BRANCO, bg=st.BG)
         self.titulo_label.grid(row=0, column=0, sticky="w")
 
-        self.paginacao_frame = Paginacao(titulo_frame, total=self.total, limite=self.limite, pagina=self.pagina, on_change=lambda p: mudar_pagina(self, p))
-        self.paginacao_frame.grid(row=0, column=1)
+        self.paginacao_frame = Paginacao(self, total=self.total, limite=self.limite, pagina=self.pagina, on_change=lambda p: mudar_pagina(self, p))
+        self.paginacao_frame.pack(side="bottom", pady=(0, 10))
 
         if self.usuario["tipo"] == "bibliotecario":
             opcoes = ["ATIVO","ATRASADO","FINALIZADO"]

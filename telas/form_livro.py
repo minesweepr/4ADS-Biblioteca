@@ -23,9 +23,9 @@ class FormLivro(tk.Frame):
         frame_esquerda = tk.Frame(self.main_frame, bg=st.BG)
         frame_esquerda.pack(side="left", anchor="n", padx=(0, 30))
 
-        card = tk.Frame( frame_esquerda, width=223, height=290, bg="#D9D9D9" )
-        card.pack()
-        card.pack_propagate(False)
+        self.card = tk.Frame( frame_esquerda, width=223, height=290, bg="#D9D9D9" )
+        self.card.pack()
+        self.card.pack_propagate(False)
 
         # slider
         if self.livro and self.livro["hex"]:
@@ -126,6 +126,7 @@ class FormLivro(tk.Frame):
         
         self.hex =  "#%02x%02X%02x"%(r,g,b)
         self.slider_hue.config(troughcolor=self.hex)
+        self.card.config(bg=self.hex)
 
     #TODO: hexParaHue
     def hexParaHue(self, hex_limpo):

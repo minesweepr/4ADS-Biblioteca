@@ -65,11 +65,13 @@ class Paginacao(tk.Frame):
     def render(self):
         for w in self.winfo_children(): w.destroy()
 
-        tk.Button(self, text="🡸", font=st.F_PAG, fg=st.ACCENT, bg=self["bg"], bd=0, command=lambda: self.on_change(max(0, self.pagina - 1)) ).pack(side="left", padx=8, pady=4)
+        tk.Button(self, text="🡸", font=st.F_PAG, fg=st.ACCENT, bg=self["bg"], activebackground=self["bg"], activeforeground=st.ACCENT, 
+                  bd=0, command=lambda: self.on_change(max(0, self.pagina - 1)) ).pack(side="left", padx=8, pady=4)
         for item in self.gerar_paginas():
             if item == "...":
                 tk.Label(self, text="...", fg=st.BORDA, bg=self["bg"], font=st.F_BTN).pack(side="left", padx=6)
                 continue
             is_selected = (item == self.pagina)
-            tk.Button( self, text=str(item + 1), font=st.F_BTN, fg=(st.ACCENT if is_selected else st.BORDA), bg=self["bg"], bd=0, activebackground=self["bg"], command=lambda p=item: self.on_change(p) ).pack(side="left", padx=8)
-        tk.Button( self, text="🡺", font=st.F_PAG, fg=st.ACCENT, bg=self["bg"], bd=0, command=lambda: self.on_change(min(self.total_paginas - 1, self.pagina + 1)) ).pack(side="left", padx=8, pady=4)
+            tk.Button( self, text=str(item + 1), font=st.F_BTN, fg=(st.ACCENT if is_selected else st.BORDA), bg=self["bg"], bd=0, activeforeground=st.ACCENT, activebackground=self["bg"], command=lambda p=item: self.on_change(p) ).pack(side="left", padx=8)
+        tk.Button( self, text="🡺", font=st.F_PAG, fg=st.ACCENT, bg=self["bg"], activebackground=self["bg"], activeforeground=st.ACCENT, 
+                  bd=0, command=lambda: self.on_change(min(self.total_paginas - 1, self.pagina + 1)) ).pack(side="left", padx=8, pady=4)

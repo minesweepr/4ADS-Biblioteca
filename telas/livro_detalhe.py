@@ -23,7 +23,7 @@ class LivroDetalhe(tk.Frame):
         self.main_frame = tk.Frame( self, bg=st.BG )
         self.main_frame.pack( fill="both", expand=True, padx=(65, 165) )
 
-        card = tk.Frame( self.main_frame, width=223, height=290, bg="#D9D9D9" )
+        card = tk.Frame( self.main_frame, width=223, height=290, bg=self.livro["hex"] )
         card.pack( side="left", anchor="n", padx=(0, 30) )
         card.pack_propagate(False)
 

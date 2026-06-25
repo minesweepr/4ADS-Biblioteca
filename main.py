@@ -7,7 +7,11 @@ from telas.home import Home
 class BibliotecaAcademica(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("1040x690")
+        largura = 950
+        altura = 820
+        coordenada_x = (self.winfo_screenwidth() - largura) // 2
+        coordenada_y = (self.winfo_screenheight() - altura) // 2
+        self.geometry(f"{largura}x{altura}+{coordenada_x}+{coordenada_y}")
         self.title("Biblioteca Acadêmica")
         self.configure(bg=st.BG)
 

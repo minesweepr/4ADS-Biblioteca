@@ -21,14 +21,14 @@ class Home(tk.Frame):
         titulo_frame = tk.Frame(self, bg=st.BG)
         titulo_frame.pack(fill="x", pady=20, padx=35)
         titulo_frame.grid_columnconfigure(0, weight=1)
-        titulo_frame.grid_columnconfigure(1, weight=1)
+        #titulo_frame.grid_columnconfigure(1, weight=1)
         titulo_frame.grid_columnconfigure(2, weight=1)
 
         titulo = tk.Label(titulo_frame, text="Todos os livros", font=st.F_SUBTITULO, fg=st.BRANCO, bg=st.BG)
         titulo.grid(row=0, column=0, sticky="w")
 
-        self.paginacao_frame = Paginacao(titulo_frame, total=self.total, limite=self.limite, pagina=self.pagina, on_change=lambda p: mudar_pagina(self, p))
-        self.paginacao_frame.grid(row=0, column=1)
+        self.paginacao_frame = Paginacao(self, total=self.total, limite=self.limite, pagina=self.pagina, on_change=lambda p: mudar_pagina(self, p))
+        self.paginacao_frame.pack(side="bottom", pady=(0, 10))
 
         if self.master.usuario_logado["tipo"] == "bibliotecario":
             botao = st.botao(titulo_frame, st.ACCENT,
@@ -68,11 +68,11 @@ class Home(tk.Frame):
             card = tk.Frame(self.grid_frame, bg=st.BG, width=125, height=250, cursor="hand2")
             card.grid_propagate(False)
 
-            capa = tk.Frame(card, width=125, height=179, bg="#D9D9D9")
+            capa = tk.Frame(card, width=125, height=179, bg=livro["hex"])
             capa.grid(row=0, column=0)
             capa.grid_propagate(False)
 
-            nome = tk.Label(card, text=(livro["titulo"][:25] + "...") if len(livro["titulo"]) > 25 else livro["titulo"], fg=st.BRANCO, bg=st.BG, font=st.F_TEXTO, wraplength=120, justify="center", height=3)
+            nome = tk.Label(card, text=(livro["titulo"][:25] + "...") if len(livro["titulo"]) > 25 else livro["titulo"], fg=st.BRANCO, bg=st.BG, font=st.F_TEXTO, wraplength=120, justify="center", height=2)
             nome.grid(row=1, column=0)
 
             texto_disponivel = ("Disponível" if livro["disponivel"] else "Indisponível")
