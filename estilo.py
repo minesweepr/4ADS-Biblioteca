@@ -2,7 +2,7 @@ import tkinter as tk
 import os
 from telas.emprestimo import Emprestimo
 from telas.home import Home
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageColor, ImageChops
 
 # root do estilo
 ## cores
@@ -53,12 +53,30 @@ def logo(parent=None, bg=None):
 def separador(parent):
     return tk.Frame(parent, height=1, bg=BORDA)
 
+def carregar_capa(cor_hex="#00ffff", tamanho=(125, 179), pil=False):
+    try:
+        img = Image.open(CAMINHO_CAPA).convert("RGB")
+        img = img.resize(tamanho)
+        if pil:
+            return img
+
+        r, g, b = ImageColor.getrgb(cor_hex)
+        color_layer = Image.new("RGB", img.size, (r, g, b))
+        img = ImageChops.multiply(img, color_layer)
+
+        return ImageTk.PhotoImage(img)
+    except Exception:
+        fallback = Image.new("RGB", tamanho, cor_hex)
+        if pil:
+            return fallback
+        return ImageTk.PhotoImage(fallback)
+
 class NavTopo(tk.Frame):
     def __init__(self, parent, usuario: dict, sair):
         super().__init__(parent, bg=NAV)
         
         self.parent = parent
-
+        
         # barra superior
         barra_sup = tk.Frame(self, bg=NAV)
         barra_sup.pack(fill="x", pady=18)

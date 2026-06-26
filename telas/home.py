@@ -68,7 +68,9 @@ class Home(tk.Frame):
             card = tk.Frame(self.grid_frame, bg=st.BG, width=125, height=250, cursor="hand2")
             card.grid_propagate(False)
 
-            capa = tk.Frame(card, width=125, height=179, bg=livro["hex"])
+            img = st.carregar_capa(livro["hex"],tamanho=(125, 179))
+            capa = tk.Label(card, image=img, bg=st.BG)
+            capa.image = img
             capa.grid(row=0, column=0)
             capa.grid_propagate(False)
 

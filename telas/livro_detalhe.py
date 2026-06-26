@@ -9,7 +9,7 @@ from telas.form_livro import FormLivro
 
 class LivroDetalhe(tk.Frame):
     def __init__(self, master, livro_id, on_close):
-        super().__init__(master)
+        super().__init__(master)        
 
         self.on_close = on_close
 
@@ -17,53 +17,57 @@ class LivroDetalhe(tk.Frame):
 
         self.configure(bg=st.BG)
 
-        self.botao_voltar = tk.Button( self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self._fechar, cursor="hand2" )
-        self.botao_voltar.pack( padx=35, pady=32, anchor="w" )
+        self.botao_voltar = tk.Button(self, text="🡰 Voltar", bg=st.BG, fg=st.BRANCO, bd=0, activebackground=st.BG, activeforeground=st.BRANCO, font=st.F_SUBTITULO, command=self._fechar, cursor="hand2")
+        self.botao_voltar.pack(padx=35, pady=32, anchor="w")
 
-        self.main_frame = tk.Frame( self, bg=st.BG )
-        self.main_frame.pack( fill="both", expand=True, padx=(65, 165) )
+        self.main_frame = tk.Frame(self, bg=st.BG)
+        self.main_frame.pack(fill="both", expand=True, padx=(65, 165))
 
-        card = tk.Frame( self.main_frame, width=223, height=290, bg=self.livro["hex"] )
-        card.pack( side="left", anchor="n", padx=(0, 30) )
-        card.pack_propagate(False)
+        # imagem aqui
+        img = st.carregar_capa(self.livro["hex"], tamanho=(223, 290))
+
+        card_label = tk.Label(self.main_frame, image=img, bg=st.BG)
+        card_label.image = img
+        card_label.pack(side="left", anchor="n", padx=(0, 30))
+        card_label.pack_propagate(False)
 
         # Textos da direita
-        self.text_frame = tk.Frame( self.main_frame, bg=st.BG )
-        self.text_frame.pack( side="left", anchor="n", fill="both", expand=True )
+        self.text_frame = tk.Frame(self.main_frame, bg=st.BG)
+        self.text_frame.pack(side="left", anchor="n", fill="both", expand=True)
 
-        texto_disponivel = ( "Disponível" if self.livro["disponivel"] else "Indisponível" )
+        texto_disponivel = ("Disponível" if self.livro["disponivel"] else "Indisponível")
 
-        cor_disponivel = ( st.SUCCESS if self.livro["disponivel"] else st.DANGER )
+        cor_disponivel = (st.SUCCESS if self.livro["disponivel"] else st.DANGER)
 
-        disponibilidade = tk.Label( self.text_frame, text=texto_disponivel, fg=cor_disponivel, bg=st.BG, font=st.F_PEQUENO )
+        disponibilidade = tk.Label(self.text_frame, text=texto_disponivel, fg=cor_disponivel, bg=st.BG, font=st.F_PEQUENO)
         disponibilidade.pack(anchor="w")
 
-        nome = tk.Label( self.text_frame, text=self.livro["titulo"], fg=st.BRANCO, bg=st.BG, font=st.F_SUBTITULO )
+        nome = tk.Label(self.text_frame, text=self.livro["titulo"], fg=st.BRANCO, bg=st.BG, font=st.F_SUBTITULO)
         nome.pack(anchor="w", pady=9)
 
-        subtitulo = tk.Label( self.text_frame, text=f'Feito por {self.livro["autor"]}', fg=st.BRANCO, bg=st.BG, font=st.F_PEQUENO )
+        subtitulo = tk.Label(self.text_frame, text=f'Feito por {self.livro["autor"]}', fg=st.BRANCO, bg=st.BG, font=st.F_PEQUENO)
         subtitulo.pack(anchor="w")
 
-        descricao_frame = tk.Frame( self.text_frame, bg=st.CARD )
-        descricao_frame.pack( fill="x", pady=18 )
+        descricao_frame = tk.Frame(self.text_frame, bg=st.CARD)
+        descricao_frame.pack(fill="x", pady=18)
 
-        descricao = tk.Label( descricao_frame, text=f'"{self.livro["quote"]}"', fg=st.APAGADO, bg=st.CARD, font=st.F_QUOTE, justify="left", anchor="w" )
-        descricao.pack( fill="x", padx=12, pady=10 )
+        descricao = tk.Label(descricao_frame, text=f'"{self.livro["quote"]}"', fg=st.APAGADO, bg=st.CARD, font=st.F_QUOTE, justify="left", anchor="w")
+        descricao.pack(fill="x", padx=12, pady=10)
         
         if self.master.usuario_logado["tipo"]=="aluno":
             self.botao_alugar = st.botao(self.text_frame, st.ACCENT, self._alugar, "Alugar")
-            self.botao_alugar.pack( anchor="w", pady=25 )
+            self.botao_alugar.pack(anchor="w", pady=25)
             self.msg_erro = tk.Label(self.text_frame, text="", fg=st.DANGER, bg=st.BG)
             self.msg_erro.pack(anchor="w")
         elif self.master.usuario_logado["tipo"]=="bibliotecario":
-            self.btn_frame = tk.Frame( self.text_frame, bg=st.BG )
+            self.btn_frame = tk.Frame(self.text_frame, bg=st.BG)
             self.btn_frame.pack(pady=18)
 
             self.botao_editar = st.botao(self.btn_frame, st.ACCENT, self._editar, "Editar")
             self.botao_editar.pack(side="left", anchor="n", pady=25, padx=15)
 
             self.botao_deletar = st.botao(self.btn_frame, st.DANGER, self._deletar, "Deletar")
-            self.botao_deletar.pack(side="left", anchor="n", pady=25, padx=15 )
+            self.botao_deletar.pack(side="left", anchor="n", pady=25, padx=15)
         
     def _fechar(self):
         self.destroy()
@@ -73,9 +77,9 @@ class LivroDetalhe(tk.Frame):
         try:
             id_aluno = self.master.usuario_logado["id"]
             id_livro = self.livro["id"]
-            data_prevista = ( datetime.now() + timedelta(days=7) ).isoformat()
+            data_prevista = (datetime.now() + timedelta(days=7)).isoformat()
 
-            alugado = bdd.emprestimo_novo( id_livro, id_aluno, data_prevista )
+            alugado = bdd.emprestimo_novo(id_livro, id_aluno, data_prevista)
             print("Empréstimo realizado")
             print(alugado)
 
@@ -87,7 +91,7 @@ class LivroDetalhe(tk.Frame):
 
     def _editar(self):
         self.destroy()
-        FormLivro(self.master, on_close=self.on_close, livro=self.livro ).pack(fill="both", expand=True)
+        FormLivro(self.master, on_close=self.on_close, livro=self.livro).pack(fill="both", expand=True)
     
     # função deletar simples
     def _deletar(self):

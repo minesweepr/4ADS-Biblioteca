@@ -4,6 +4,8 @@ import colorsys
 from tkinter import ttk
 from bdd import livro_novo
 from bdd import livro_editar
+from PIL import ImageColor, ImageChops, ImageTk, Image
+
 
 class FormLivro(tk.Frame):
     def __init__(self, master, on_close, livro=None):
@@ -23,11 +25,6 @@ class FormLivro(tk.Frame):
         frame_esquerda = tk.Frame(self.main_frame, bg=st.BG)
         frame_esquerda.pack(side="left", anchor="n", padx=(0, 30))
 
-        self.card = tk.Frame( frame_esquerda, width=223, height=290, bg="#D9D9D9" )
-        self.card.pack()
-        self.card.pack_propagate(False)
-
-        # slider
         if self.livro and self.livro["hex"]:
             self.hex = self.livro["hex"]
             num_set = self.hexParaHue(self.livro["hex"].lstrip('#'))
@@ -35,6 +32,15 @@ class FormLivro(tk.Frame):
             self.hex = "#00ffff"
             num_set = 180
 
+        self.base_img = st.carregar_capa(self.hex, tamanho=(223, 290), pil=True)
+        self.card = tk.Label(frame_esquerda, bg=st.BG)
+        self.card.pack()
+
+        self.after_idle(self._renderizar_init_img)
+        self.card.pack_propagate(False)
+
+
+        # slider
         self.slider_hue = tk.Scale(frame_esquerda, from_=0, to=360, orient="horizontal", command=self.hueParaHex, bg=st.ACCENT,
                                    showvalue=False, highlightthickness=0, activebackground=st.ACCENT, troughcolor=self.hex)
         
@@ -126,7 +132,12 @@ class FormLivro(tk.Frame):
         
         self.hex =  "#%02x%02X%02x"%(r,g,b)
         self.slider_hue.config(troughcolor=self.hex)
-        self.card.config(bg=self.hex)
+        
+        img = self.base_img.copy().convert("RGB")
+        color_layer = Image.new("RGB", img.size, (r, g, b))
+        img = ImageChops.multiply(img, color_layer)
+        self.tk_img = ImageTk.PhotoImage(img)
+        self.card.configure(image=self.tk_img)
 
     #TODO: hexParaHue
     def hexParaHue(self, hex_limpo):
@@ -135,3 +146,13 @@ class FormLivro(tk.Frame):
         b = int(hex_limpo[4:6], 16) / 255.0
         h, l, s = colorsys.rgb_to_hls(r, g, b)
         return int(h * 360)
+    
+    def _renderizar_init_img(self):
+        img = self.base_img.copy().convert("RGB")
+
+        r, g, b = ImageColor.getrgb(self.hex)
+        color_layer = Image.new("RGB", img.size, (r, g, b))
+
+        img = ImageChops.multiply(img, color_layer)
+        self.tk_img = ImageTk.PhotoImage(img) 
+        self.card.configure(image=self.tk_img)
