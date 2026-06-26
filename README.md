@@ -19,7 +19,18 @@ python main.py
 ```
 
 ## Usuários
-O sistema já vem com um usuário bibliotecário pré-cadastrado:
-- **Nome**: `Administrador`
-- **E-mail**: `bibli@tecario.com`
-- **Senha**: `123456`
+O sistema já vem com três usuários pré-cadastrado:
+* **Bibliotecário:**
+  * **Nome:** `Administrador`
+  * **E-mail:** `bibli@tecario.com`
+  * **Senha:** `123456`
+
+* **Aluno 1 (Pedro):**
+  * **Nome:** `Pedro`
+  * **E-mail:** `pedro@gmail.com`
+  * **Senha:** `123456`
+
+* **Aluno 2 (Isabela):**
+  * **Nome:** `Isabela`
+  * **E-mail:** `isabela@gmail.com`
+  * **Senha:** `123456`
