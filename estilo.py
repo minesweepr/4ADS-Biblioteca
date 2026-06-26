@@ -21,6 +21,7 @@ F_TITULO = ("Arial", 20, "bold")
 F_SUBTITULO = ("Arial", 16, "bold")
 F_PAG = ("Arial", 14, "bold")
 F_BTN = ("Arial", 11, "bold")
+F_BTN_ATV = ("Arial", 11, "bold", "underline")
 F_TEXTO = ("Arial", 10)
 F_QUOTE = ("Arial", 10, "italic")
 F_PEQUENO = ("Arial", 8)
@@ -99,16 +100,21 @@ class NavTopo(tk.Frame):
         barra_inf = tk.Frame(self, bg=NAV)
         barra_inf.pack(fill="x", pady=(0, 10))
 
-        # TODO: fg muda dependendo da pagina
         self.acervo = tk.Button(barra_inf, text="Acervo", font=F_BTN, bg=NAV, fg=APAGADO, bd=0, 
                                 cursor="hand2", activebackground=NAV, activeforeground=ACCENT, 
-                                command=lambda: self._abrir_tela(Home))
+                                command=lambda: (self._abrir_tela(Home), self._set_ativo("acervo")))
         self.acervo.pack(side="left", padx=23)
 
         self.emprestimo = tk.Button(barra_inf, text="Empréstimos", font=F_BTN, bg=NAV, fg=APAGADO, 
                                     bd=0, cursor="hand2", activebackground=NAV, activeforeground=ACCENT, 
-                                    command=lambda: self._abrir_tela(Emprestimo))
+                                    command=lambda: (self._abrir_tela(Emprestimo), self._set_ativo("emprestimo")))
         self.emprestimo.pack(side="left", padx=23)
+
+        self.menu = {
+            "acervo": self.acervo,
+            "emprestimo": self.emprestimo
+        }
+        self._set_ativo("acervo")
 
     def _abrir_tela(self, TelaClasse):
         root = self.winfo_toplevel()
@@ -118,3 +124,9 @@ class NavTopo(tk.Frame):
                 widget.destroy()
 
         TelaClasse(root).pack(fill="both", expand=True)
+    
+    def _set_ativo(self, nome):
+        for k, btn in self.menu.items():
+            btn.config(fg=APAGADO, font=F_BTN)
+
+        self.menu[nome].config(fg=ACCENT, font=F_BTN_ATV)
