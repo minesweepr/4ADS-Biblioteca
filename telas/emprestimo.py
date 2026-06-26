@@ -62,6 +62,8 @@ class Emprestimo(tk.Frame):
         else:
             self.emprestimos = bdd.emprestimo_listar_por_usuario(self.usuario["id"])
         self.livros = bdd.livro_listar_todos()
+        self.alunos = bdd.aluno_listar_todos()
+        self.alunos_dict = {a["id"]: a["nome"] for a in self.alunos}
 
     def criar_cards(self):
         for emprestimo in self.emprestimos:
@@ -90,10 +92,12 @@ class Emprestimo(tk.Frame):
             cor_retorno = st.DANGER if atrasado else st.ACCENT
 
             if self.usuario["tipo"] == "bibliotecario":
+                nome_aluno = self.alunos_dict.get(emprestimo["id_aluno"], "Aluno não encontrado")
+                
                 data_emprestimo = datetime.fromisoformat(emprestimo["data_emprestimo"])
 
                 texto_retorno = f"Devolvido em: {datetime.fromisoformat(emprestimo['data_retorno']).strftime('%d/%m/%Y')}" if emprestimo["data_retorno"] else ""
-                tk.Label(frame_esquerdo, text=f"Emprestado para {emprestimo['id_aluno']}", fg=st.APAGADO, bg=st.CARD, font=st.F_PEQUENO).pack(side="left")
+                tk.Label(frame_esquerdo, text=f"Emprestado para {nome_aluno}", fg=st.APAGADO, bg=st.CARD, font=st.F_PEQUENO).pack(side="left")
 
                 frame_direito = tk.Frame(card, bg=st.CARD)
                 frame_direito.pack(side="right", padx=15, pady=10, anchor="e")
@@ -130,19 +134,15 @@ class Emprestimo(tk.Frame):
         self.carregar_emprestimos()
 
         self.total = len(self.emprestimos)
-
         inicio = self.pagina * self.limite
         fim = inicio + self.limite
-
         self.emprestimos = self.emprestimos[inicio:fim]
 
         for c in self.cards:
             c.destroy()
 
         self.cards.clear()
-
         self.criar_cards()
-
         atualizar_paginacao(self)
 
     def atualizar_lista(self, *_):

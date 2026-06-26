@@ -88,6 +88,10 @@ def livro_deletar(id: int):
         conn.execute("DELETE FROM livro WHERE id = ?", (id,))
 
 # usuário
+def aluno_listar_todos():
+    with conector() as conn:
+         return conn.execute("SELECT id, nome FROM usuario WHERE tipo = 'aluno'").fetchall()
+    
 def usuario_novo(nome: str, email: str, senha: str):
     try:
         with conector() as conn:
